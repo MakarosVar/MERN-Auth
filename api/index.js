@@ -21,3 +21,11 @@ app.listen(3000, () => {
 
 app.use('/api/user', userRoutes);
 app.use('api/auth', authRoutes);
+
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  const message = err.message || 'Server Error';
+  res
+    .status(statusCode)
+    .json({ successs: false, message, statusCode });
+});
