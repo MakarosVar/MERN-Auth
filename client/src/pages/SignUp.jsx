@@ -9,18 +9,28 @@ export default function SignUp() {
       [e.target.id]: e.target.value,
     });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await res;
-    console.log(data);
+    console.log('Submitting form data:', formData);
+    try {
+      console.log('Sending request to:', '/api/auth/signup');
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      console.log('Response status:', res.status);
+      console.log(
+        'Response headers:',
+        Object.fromEntries(res.headers)
+      );
+      const data = await res.json();
+      console.log('Response data:', data);
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
   };
   return (
     <div className="p-3 max-w-lg mx-auto">
