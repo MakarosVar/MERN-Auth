@@ -3,6 +3,8 @@ import { useState } from 'react';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -11,9 +13,8 @@ export default function SignUp() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting form data:', formData);
     try {
-      console.log('Sending request to:', '/api/auth/signup');
+      setLoading(true);
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -21,15 +22,18 @@ export default function SignUp() {
         },
         body: JSON.stringify(formData),
       });
-      console.log('Response status:', res.status);
-      console.log(
-        'Response headers:',
-        Object.fromEntries(res.headers)
-      );
       const data = await res.json();
-      console.log('Response data:', data);
-    } catch (error) {
-      console.error('Fetch error:', error);
+      setLoading(false);
+      if (data.success === true) {
+        setError(false);
+      } else {
+        setError(true);
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      setError(true);
     }
   };
   return (
@@ -66,10 +70,11 @@ export default function SignUp() {
           onChange={handleChange}
         />
         <button
+          disabled={loading}
           type="submit"
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
-          Sign Up
+          {loading ? 'Loading...' : 'Sign Up'}
         </button>
       </form>
       <div className="flex gap-2 mt-5">
@@ -78,6 +83,9 @@ export default function SignUp() {
           <span className="text-blue-500">Sign In</span>
         </Link>
       </div>
+      <p className="text-red-700 text-center mt-5">
+        {error && 'An error occurred. Please try again later.'}
+      </p>
     </div>
   );
 }
